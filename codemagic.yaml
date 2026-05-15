@@ -7,7 +7,7 @@ workflows:
         - app_store_credentials
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: co.zuryo.app
+        bundle_identifier: com.zuryotech.app
       xcode: latest
       cocoapods: default
     scripts:
