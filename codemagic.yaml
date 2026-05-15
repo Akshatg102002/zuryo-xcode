@@ -33,11 +33,20 @@ workflows:
       - name: Build iOS
         script: |
           xcode-project use-profiles
-          xcode-project build-ipa \
-            --workspace "$CM_BUILD_DIR/$XCODE_WORKSPACE" \
-            --scheme "$XCODE_SCHEME" \
-            --config "Release" \
-            --xcargs "CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM=2H83NUBAUG PROVISIONING_PROFILE_SPECIFIER='Zuryo App Store' CODE_SIGN_IDENTITY='iPhone Distribution'"
+          xcodebuild -workspace "$CM_BUILD_DIR/$XCODE_WORKSPACE" \
+            -scheme "$XCODE_SCHEME" \
+            -configuration Release \
+            -archivePath "$CM_BUILD_DIR/build/ios/xcarchive/Zuryo.xcarchive" \
+            archive \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM=2H83NUBAUG \
+            PROVISIONING_PROFILE_SPECIFIER="Zuryo App Store" \
+            CODE_SIGN_IDENTITY="iPhone Distribution" \
+            COMPILER_INDEX_STORE_ENABLE=NO
+          xcodebuild -exportArchive \
+            -archivePath "$CM_BUILD_DIR/build/ios/xcarchive/Zuryo.xcarchive" \
+            -exportOptionsPlist "$CM_BUILD_DIR/export_options.plist" \
+            -exportPath "$CM_BUILD_DIR/build/ios/ipa"
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
