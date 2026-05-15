@@ -33,6 +33,30 @@ workflows:
       - name: Build iOS
         script: |
           xcode-project use-profiles
+
+          # Create export options plist
+          cat > $CM_BUILD_DIR/export_options.plist << PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store</string>
+            <key>teamID</key>
+            <string>2H83NUBAUG</string>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>signingCertificate</key>
+            <string>iPhone Distribution</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>com.zuryotech.app</key>
+              <string>Zuryo App Store</string>
+            </dict>
+          </dict>
+          </plist>
+          PLIST
+
           xcodebuild -workspace "$CM_BUILD_DIR/$XCODE_WORKSPACE" \
             -scheme "$XCODE_SCHEME" \
             -configuration Release \
@@ -43,6 +67,7 @@ workflows:
             PROVISIONING_PROFILE_SPECIFIER="Zuryo App Store" \
             CODE_SIGN_IDENTITY="iPhone Distribution" \
             COMPILER_INDEX_STORE_ENABLE=NO
+
           xcodebuild -exportArchive \
             -archivePath "$CM_BUILD_DIR/build/ios/xcarchive/Zuryo.xcarchive" \
             -exportOptionsPlist "$CM_BUILD_DIR/export_options.plist" \
