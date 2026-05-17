@@ -34,7 +34,6 @@ workflows:
         script: |
           xcode-project use-profiles
 
-          # Create export options plist
           cat > $CM_BUILD_DIR/export_options.plist << PLIST
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -72,12 +71,13 @@ workflows:
             -archivePath "$CM_BUILD_DIR/build/ios/xcarchive/Zuryo.xcarchive" \
             -exportOptionsPlist "$CM_BUILD_DIR/export_options.plist" \
             -exportPath "$CM_BUILD_DIR/build/ios/ipa"
+
+          # Upload to App Store Connect using api key
+          app-store-connect publish \
+            --path "$CM_BUILD_DIR/build/ios/ipa/Zuryo.ipa" \
+            --key-id "$APP_STORE_CONNECT_KEY_IDENTIFIER" \
+            --issuer-id "$APP_STORE_CONNECT_ISSUER_ID" \
+            --private-key "$APP_STORE_CONNECT_PRIVATE_KEY"
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
-    publishing:
-      app_store_connect:
-        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
-        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
-        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
-        submit_to_testflight: false
